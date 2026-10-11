@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/attack_data.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"ember_cleaver"
+display_name = "Ember Cleaver"
+damage = 25
+cooldown_seconds = 1.0
+reach_meters = 2.2
+arc_degrees = 120.0

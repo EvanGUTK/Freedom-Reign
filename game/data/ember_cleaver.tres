@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/item_data.gd" id="1_item"]
+[ext_resource type="Resource" path="res://data/ember_cleaver_attack.tres" id="2_attack"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"ember_cleaver"
+display_name = "Ember Cleaver"
+grants_attack = ExtResource("2_attack")
