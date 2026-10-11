@@ -13,7 +13,9 @@ readonly REPO_ROOT="${SCRIPT_DIR%/*}"
 readonly PROJECT_DIR="$REPO_ROOT/game"
 readonly GODOT_BIN="${GODOT:-godot}"
 readonly TEMPLATES_ROOT="${XDG_DATA_HOME:-$HOME/.local/share}/godot/export_templates"
-readonly VERSION_FIELDS=1-4
+# Numeric fields, then the status field (stable, rc1, beta2, dev3 ...): the
+# folder name Godot uses for export templates. Build metadata after it is ignored.
+readonly VERSION_PATTERN='^([0-9]+(\.[0-9]+)*\.[A-Za-z][A-Za-z0-9]*)(\.|$)'
 readonly PRESET_LINUX="Linux"
 readonly PRESET_WINDOWS="Windows Desktop"
 readonly OUTPUT_LINUX="freedom-reign.x86_64"
@@ -51,8 +53,12 @@ if ! godot_version="$("$GODOT_BIN" --version 2>/dev/null)"; then
 	fail "toolchain"
 fi
 
-# "4.7.2.stable.arch_linux.ed1daf0bf" -> "4.7.2.stable", the templates folder name.
-templates_version="$(cut -d. -f"$VERSION_FIELDS" <<<"$godot_version")"
+# "4.7.2.stable.arch_linux.ed1daf0bf" -> "4.7.2.stable", "4.8.stable.official.abc" -> "4.8.stable".
+if [[ ! "$godot_version" =~ $VERSION_PATTERN ]]; then
+	echo "error: cannot read a version from '$GODOT_BIN --version' output: '$godot_version'" >&2
+	fail "toolchain"
+fi
+templates_version="${BASH_REMATCH[1]}"
 templates_dir="$TEMPLATES_ROOT/$templates_version"
 if [[ ! -d "$templates_dir" ]]; then
 	echo "error: Godot export templates $templates_version are not installed (expected in $templates_dir)" >&2

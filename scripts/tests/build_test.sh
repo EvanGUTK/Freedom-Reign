@@ -25,6 +25,7 @@ readonly STUB="$WORKDIR/godot-stub"
 readonly STUB_LOG="$WORKDIR/stub.log"
 readonly XDG="$WORKDIR/xdg"
 readonly TEMPLATES_DIR="$XDG/godot/export_templates/$TEMPLATES_VERSION"
+stub_version=$STUB_VERSION
 total=0
 failures=0
 
@@ -106,7 +107,7 @@ run_build_case() {
 	total=$((total + 1))
 	reset_state
 	out="$(env GODOT="$godot" XDG_DATA_HOME="$XDG" STUB_MODE="$stub_mode" \
-		STUB_VERSION="$STUB_VERSION" STUB_LOG="$STUB_LOG" \
+		STUB_VERSION="$stub_version" STUB_LOG="$STUB_LOG" \
 		STUB_PRESET_LINUX="$PRESET_LINUX" STUB_ARTIFACT_LINUX="$ARTIFACT_LINUX" \
 		STUB_PRESET_WINDOWS="$PRESET_WINDOWS" STUB_ARTIFACT_WINDOWS="$ARTIFACT_WINDOWS" \
 		"$REPO/scripts/build.sh" "$@" 2>&1)" || rc=$?
@@ -118,6 +119,19 @@ run_build_case() {
 	else
 		report "$name" no "want exit $want_rc with '$want_text' and exports '$want_calls'; got exit $rc, exports '$calls', output: $out"
 	fi
+}
+
+# run_version_case NAME GODOT_VERSION TEMPLATES_FOLDER
+# build.sh must look for templates in TEMPLATES_FOLDER (and only there) when
+# `godot --version` prints GODOT_VERSION.
+run_version_case() {
+	local name=$1 version=$2 folder=$3
+	local templates_root="$XDG/godot/export_templates"
+	without_templates
+	mkdir -p "$templates_root/$folder"
+	stub_version=$version
+	run_build_case "$name" "$EXIT_PASS" "PASS" "$PRESET_LINUX" create "$STUB" linux
+	stub_version=$STUB_VERSION
 }
 
 # play.sh must start Godot on the repo's game/ folder and pass extra arguments on.
@@ -155,6 +169,13 @@ run_build_case "e: export produces no artifact" "$EXIT_FAIL" "$ARTIFACT_LINUX wa
 
 run_play_case "f: play.sh passes --path and extra args" "$EXIT_PASS" "--path $REPO/game --windowed" "$STUB" --windowed
 run_play_case "g: play.sh Godot missing" "$EXIT_FAIL" "" "$WORKDIR/no-such-godot"
+
+run_version_case "h1: version with patch and distro build" "4.7.2.stable.arch_linux.ed1daf0bf" "4.7.2.stable"
+run_version_case "h2: x.y.0 build prints no patch field" "4.8.stable.official.abc" "4.8.stable"
+run_version_case "h3: release candidate" "4.8.1.rc1.official.abc" "4.8.1.rc1"
+stub_version="not a version"
+run_build_case "h4: unreadable version" "$EXIT_FAIL" "cannot read a version" "" "" "$STUB" linux
+stub_version=$STUB_VERSION
 
 echo "$((total - failures))/$total cases passed"
 if ((failures > 0)); then
