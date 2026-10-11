@@ -11,3 +11,7 @@ config/features=PackedStringArray("4.7", "Forward Plus")
 [rendering]
 
 renderer/rendering_method="forward_plus"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
