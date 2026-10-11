@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/arena/arena.tscn" id="1_arena"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ui_root.tscn" id="2_ui"]
@@ -8,6 +8,9 @@
 [ext_resource type="PackedScene" path="res://scenes/enemies/husk.tscn" id="5_husk"]
 [ext_resource type="Script" path="res://scripts/arena/encounter.gd" id="6_encounter"]
 [ext_resource type="Resource" path="res://data/ember_cleaver.tres" id="7_drop"]
+
+[ext_resource type="Script" path="res://scripts/loot/loot_spawner.gd" id="8_loot_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/loot/loot_pickup.tscn" id="9_pickup"]
 
 [node name="Main" type="Node3D"]
 
@@ -25,3 +28,7 @@ enemy_spawns = NodePath("../Arena/Spawns")
 [node name="Encounter" type="Node" parent="."]
 script = ExtResource("6_encounter")
 drop_item = ExtResource("7_drop")
+
+[node name="LootSpawner" type="Node" parent="."]
+script = ExtResource("8_loot_spawner")
+pickup_scene = ExtResource("9_pickup")
