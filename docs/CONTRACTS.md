@@ -95,6 +95,7 @@ Player: health 100, walk 6 m/s, jump height 2.2 m, gravity 24 m/s², third-perso
 - `scripts/play.sh` runs the game windowed (`godot --path game`).
 - `game/export_presets.cfg` with `Linux` and `Windows Desktop` presets exporting to `game/export/<preset>/`; `scripts/build.sh [linux|windows|all]` runs the headless export and, if export templates are missing, fails with the one-line install instruction.
 - `.github/workflows/check.yml` runs `scripts/check.sh` and `scripts/tests/check_test.sh` on every push and pull request with Godot 4.7.2 headless.
+- CI is **disabled** (`gh workflow disable check.yml`, 2026-10-10): the user's GitHub account has a billing block and does not need CI. `scripts/check.sh` run by the integrator is the only gate. Nobody watches or reruns Actions until the user says to re-enable it.
 
 ### Order of landing
 1. **engine foundation**: project settings, `Events`, data types and instances, minimal `AudioManager`, `ui_root.tscn` instanced in `main.tscn`, spawn markers. → integrator → every role runs `git merge main`.
