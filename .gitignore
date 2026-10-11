@@ -26,3 +26,8 @@ target/
 
 # Logs
 *.log
+
+# Godot
+game/.godot/
+game/export/
+*.tmp
