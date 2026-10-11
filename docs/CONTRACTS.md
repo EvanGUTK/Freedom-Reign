@@ -12,7 +12,9 @@ Anything two agents both depend on gets written here by the chief before either 
   2. boot the main scene: `godot --headless --path game --quit-after 2`
   3. tests: `godot --headless --path game -s addons/gut/gut_cmdln.gd -gdir=res://tests -ginclude_subdirs -gexit`
   Each must exit 0, and the combined output must contain no `SCRIPT ERROR` or `ERROR:` lines.
-- Git-ignored: `game/.godot/`, `game/export/`, `*.tmp`. Everything else under `game/` is committed, including `.import` sidecar files once assets exist.
+- Git-ignored: `game/.godot/`, `game/export/`, `*.tmp`. Everything else under `game/` is committed, including `.import` sidecars next to assets and the `*.gd.uid` sidecars Godot 4.7 generates next to scripts (Godot's guidance is to version them; never delete or hand-edit one).
+- Empty contract folders hold a `.gitkeep`; delete it in the same commit that adds the folder's first real file.
+- `scripts/check.sh` must also fail when GUT reports `Nothing was run` — zero tests passing is a failure, not a pass.
 
 ## Audio events
 _None yet._
