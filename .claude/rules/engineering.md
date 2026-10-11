@@ -8,6 +8,7 @@ These apply to every line of code in this repo, from every session. There is no 
 - Every loop has a termination condition you can name. Retries are capped (three at most) and then fail loudly.
 - If something fails twice the same way, stop and report it to the chief. Do not keep retrying or try random variations.
 - Never disable a test, lint rule, type check, or warning to get green. Fix the cause or report it.
+  - Recorded exception: `scripts/events.gd` may use `@warning_ignore_start("unused_signal")`. A signal bus declares signals that other scripts emit, so Godot's warning is a false positive there and nowhere else.
 
 ## Structure
 - One responsibility per function and per file. If you need "and" to describe what it does, split it.

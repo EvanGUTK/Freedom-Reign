@@ -43,7 +43,7 @@ A merge conflict between two roles is a process failure, not a git problem. If y
 | `game/scenes/ui/**`, `game/scripts/ui/**` | frontend | engine's foundation creates `scenes/ui/ui_root.tscn` (a bare `CanvasLayer`) and instances it in `main.tscn`; after that frontend owns it and never touches `main.tscn` |
 | `game/scenes/audio/**`, `game/scripts/audio/**`, `game/assets/audio/**` | audio | engine's foundation creates the minimal `scripts/audio/audio_manager.gd` registered as autoload; after that audio owns it |
 | `scripts/**`, `.github/**`, `game/export_presets.cfg` | backend | |
-| `game/tests/<role>/` | that role | `tests/engine/`, `tests/ui/`, `tests/audio/`; the existing `tests/test_smoke.gd` stays engine's |
+| `game/tests/<role>/` | that role | `tests/engine/`, `tests/ui/`, `tests/audio/`; the smoke test lives at `tests/engine/test_smoke.gd` |
 
 ### Input actions (engine foundation, in `project.godot`)
 `move_forward` W / left stick up · `move_back` S / down · `move_left` A / left · `move_right` D / right · `jump` Space / gamepad A · `attack` left mouse / gamepad X · `pause` Escape / Start. Camera look uses relative mouse motion and the right stick inside the player camera; no action needed.
