@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/husk.gd" id="1_husk"]
+
+[sub_resource type="StandardMaterial3D" id="body_mat"]
+albedo_color = Color(0.42, 0.1, 0.09, 1)
+roughness = 1.0
+emission_enabled = true
+emission = Color(0.35, 0.04, 0.03, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="StandardMaterial3D" id="horn_mat"]
+albedo_color = Color(0.8, 0.75, 0.6, 1)
+roughness = 1.0
+
+[sub_resource type="CapsuleShape3D" id="body_shape"]
+radius = 0.45
+height = 1.6
+
+[sub_resource type="CapsuleMesh" id="body_mesh"]
+radius = 0.45
+height = 1.6
+
+[sub_resource type="CylinderMesh" id="horn_mesh"]
+top_radius = 0.0
+bottom_radius = 0.1
+height = 0.45
+
+[node name="Husk" type="CharacterBody3D" groups=["enemies"]]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_husk")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("body_shape")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+mesh = SubResource("body_mesh")
+material_override = SubResource("body_mat")
+
+[node name="HornLeft" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.75, 0)
+mesh = SubResource("horn_mesh")
+material_override = SubResource("horn_mat")
+
+[node name="HornRight" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.75, 0)
+mesh = SubResource("horn_mesh")
+material_override = SubResource("horn_mat")

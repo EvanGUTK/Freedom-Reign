@@ -6,6 +6,9 @@ const ENEMY_SPAWN_COUNT := 5
 const FLOOR_SIDE_METERS := 30.0
 const PLATFORM_TOP_HEIGHTS := [1.5, 3.0, 4.5]
 const HEIGHT_TOLERANCE := 0.001
+const WORLD_LAYER_BIT := 1
+const WALL_COUNT := 4
+const MIN_SPAWN_TO_PLATFORM_RATIO := 1.5
 
 var _main: Node3D
 
@@ -56,8 +59,9 @@ func test_platform_tops_are_at_contract_heights() -> void:
 func test_world_geometry_is_on_the_world_layer() -> void:
 	var bodies: Array[Node] = [_main.get_node("Arena/Floor")]
 	bodies.append_array(_main.get_node("Arena/Platforms").get_children())
+	bodies.append_array(_main.get_node("Arena/Walls").get_children())
 	for body in bodies:
-		assert_eq((body as StaticBody3D).collision_layer, 1, "%s should be on layer 1 (World)" % body.name)
+		assert_eq((body as StaticBody3D).collision_layer, WORLD_LAYER_BIT, "%s should be on the World layer" % body.name)
 
 
 func test_five_enemy_spawn_markers() -> void:
@@ -77,3 +81,44 @@ func test_player_spawn_marker_exists_inside_the_floor() -> void:
 		return
 	assert_lt(absf(spawn.position.x), FLOOR_SIDE_METERS / 2.0)
 	assert_lt(absf(spawn.position.z), FLOOR_SIDE_METERS / 2.0)
+
+
+func test_four_walls_enclose_the_floor() -> void:
+	var walls := _main.get_node("Arena/Walls").get_children()
+	assert_eq(walls.size(), WALL_COUNT)
+	for wall in walls:
+		var shape := (wall.get_node("Shape") as CollisionShape3D).shape as BoxShape3D
+		assert_gt(shape.size.y, 4.5, "%s is taller than the highest platform so nobody jumps out" % wall.name)
+
+
+func test_platforms_are_solid_down_to_the_floor() -> void:
+	for platform in _main.get_node("Arena/Platforms").get_children():
+		var shape := (platform.get_node("Shape") as CollisionShape3D).shape as BoxShape3D
+		assert_almost_eq(platform.global_position.y - shape.size.y / 2.0, 0.0, HEIGHT_TOLERANCE, "%s base on the floor" % platform.name)
+
+
+func test_steps_between_platform_tops_are_jumpable() -> void:
+	var player := (load("res://scenes/player/player.tscn") as PackedScene).instantiate() as Player
+	var reachable_rise := player.jump_height
+	player.free()
+	var previous_top := 0.0
+	for height in PLATFORM_TOP_HEIGHTS:
+		assert_lt(height - previous_top, reachable_rise, "each step up is within the jump height")
+		previous_top = height
+
+
+func test_there_is_a_sun_and_a_world_environment() -> void:
+	var sun := _main.get_node("Arena/Sun") as DirectionalLight3D
+	assert_not_null(sun)
+	assert_lt((sun.global_transform.basis * Vector3.FORWARD).y, -0.5, "the sun shines steeply downward")
+	var environment := _main.get_node("Arena/Environment") as WorldEnvironment
+	assert_not_null(environment.environment)
+
+
+func test_the_first_platform_is_closer_to_the_player_than_any_enemy_spawn() -> void:
+	var start := (_main.get_node("Arena/PlayerSpawn") as Marker3D).global_position
+	var first_platform := _main.get_node("Arena/Platforms/Platform1") as Node3D
+	var distance_to_platform := start.distance_to(first_platform.global_position)
+	for spawn in _main.get_node("Arena/Spawns").get_children():
+		var distance_to_spawn := start.distance_to((spawn as Marker3D).global_position)
+		assert_gt(distance_to_spawn, distance_to_platform * MIN_SPAWN_TO_PLATFORM_RATIO, "%s is far enough that the player can climb before it arrives" % spawn.name)
