@@ -14,4 +14,6 @@ Game project built by a team of Claude Code agents. See `CLAUDE.md` for how the 
 
 `scripts/check.sh` is what "the build is green" means: it runs the import, boot, and GUT test commands from `docs/CONTRACTS.md` in order, prints one line per step, and ends with `PASS`, or stops at the first failing step with `FAIL: <step>` and a nonzero exit. A step fails on a nonzero exit, any `SCRIPT ERROR` or `ERROR:` line, or GUT reporting `Nothing was run` or zero passing tests. It works from any directory and uses the Godot binary in `$GODOT` if set, else `godot` from `PATH`. `scripts/tests/check_test.sh` self-tests it against a stub Godot (no real Godot needed); run it after editing `check.sh`.
 
+`scripts/tests/build_test.sh` does the same for `build.sh` and `play.sh` (stub Godot, temp templates folder and temp project, so nothing is exported or downloaded); run it after editing either script.
+
 CI (`.github/workflows/check.yml`) runs `scripts/tests/check_test.sh` and then `scripts/check.sh` with Godot 4.7.2 headless on every push and pull request.
