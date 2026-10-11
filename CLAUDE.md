@@ -14,6 +14,7 @@ Six Claude Code sessions work on this repo, launched by `scripts/launch-team.sh`
 - Rules every session follows: `.claude/rules/` (loaded automatically; `engineering.md`, `context.md`, `preferences.md`).
 - What we are building and why: `docs/DESIGN.md` (pillars, fixed decisions, current milestone).
 - Interfaces shared between roles: `docs/CONTRACTS.md`. Accepted-but-undispatched follow-ups: `docs/BACKLOG.md`.
+- Where we stopped last time and how to resume: `docs/STATUS.md` (the chief updates it at every pause).
 - If you were started as a subagent in a temporary worktree, stay on the branch you were given.
 
 ## Chain of command
