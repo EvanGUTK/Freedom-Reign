@@ -50,10 +50,10 @@ paste_cmd() {  # human-readable command line for one role (prompts contain no si
 
 tmux_cmd() {  # fully shell-escaped command line for tmux
   local role="$1" model="$2" prompt="$3"
-  local cmd=(claude --name "$role")
-  [[ -n "$model" ]] && cmd+=(--model "$model")
-  cmd+=("$prompt")
-  printf '%q ' "${cmd[@]}"
+  local argv=(claude --name "$role")
+  [[ -n "$model" ]] && argv+=(--model "$model")
+  argv+=("$prompt")
+  printf '%q ' "${argv[@]}"
 }
 
 case "$MODE" in
