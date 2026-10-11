@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Dependencies and build output — extend once the engine/stack is chosen
+node_modules/
+dist/
+build/
+out/
+target/
+
+# Claude Code local state
+.claude/settings.local.json
+.claude/worktrees/
+
+# Logs
+*.log
