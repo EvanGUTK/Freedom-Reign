@@ -8,6 +8,7 @@ const ACTION_MOVE_RIGHT := &"move_right"
 const ACTION_MOVE_FORWARD := &"move_forward"
 const ACTION_MOVE_BACK := &"move_back"
 const ACTION_JUMP := &"jump"
+const ACTION_ATTACK := &"attack"
 const TURN_RATE := 14.0 # how fast the model turns to face its heading, per second
 const DEAD_TILT_RADIANS := PI / 2.0
 
@@ -22,6 +23,7 @@ var _was_on_floor := false
 var _facing_yaw := 0.0
 
 @onready var _camera_rig: CameraRig = $CameraRig
+@onready var _attack: AttackController = $Attack
 @onready var _model: Node3D = $Model
 
 
@@ -44,6 +46,8 @@ func _physics_process(delta: float) -> void:
 	velocity.z = heading.z * walk_speed
 	if heading != Vector3.ZERO:
 		_facing_yaw = lerp_angle(_facing_yaw, PlayerMath.yaw_from_direction(heading), minf(TURN_RATE * delta, 1.0))
+	if _alive and Input.is_action_pressed(ACTION_ATTACK):
+		_swing()
 	_model.rotation.y = _facing_yaw
 
 	move_and_slide()
@@ -52,6 +56,10 @@ func _physics_process(delta: float) -> void:
 	if PlayerMath.is_hard_landing(_was_on_floor, on_floor, fall_speed):
 		Events.player_landed.emit()
 	_was_on_floor = on_floor
+
+
+func equip_attack(attack: AttackData) -> void:
+	_attack.equip(attack)
 
 
 func is_alive() -> bool:
@@ -63,6 +71,14 @@ func take_damage(amount: int) -> void:
 		return
 	Events.player_hurt.emit(amount)
 	_health.take_damage(amount)
+
+
+# Swings toward where the camera looks, so the camera is also the aim.
+func _swing() -> void:
+	var aim_yaw := _camera_rig.yaw
+	if _attack.is_ready():
+		_facing_yaw = aim_yaw
+	_attack.try_attack(global_position, PlayerMath.forward_from_yaw(aim_yaw))
 
 
 func _heading() -> Vector3:
