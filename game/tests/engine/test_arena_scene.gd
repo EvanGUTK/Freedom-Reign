@@ -8,6 +8,7 @@ const PLATFORM_TOP_HEIGHTS := [1.5, 3.0, 4.5]
 const HEIGHT_TOLERANCE := 0.001
 const WORLD_LAYER_BIT := 1
 const WALL_COUNT := 4
+const MIN_SPAWN_TO_PLATFORM_RATIO := 1.5
 
 var _main: Node3D
 
@@ -112,3 +113,12 @@ func test_there_is_a_sun_and_a_world_environment() -> void:
 	assert_lt((sun.global_transform.basis * Vector3.FORWARD).y, -0.5, "the sun shines steeply downward")
 	var environment := _main.get_node("Arena/Environment") as WorldEnvironment
 	assert_not_null(environment.environment)
+
+
+func test_the_first_platform_is_closer_to_the_player_than_any_enemy_spawn() -> void:
+	var start := (_main.get_node("Arena/PlayerSpawn") as Marker3D).global_position
+	var first_platform := _main.get_node("Arena/Platforms/Platform1") as Node3D
+	var distance_to_platform := start.distance_to(first_platform.global_position)
+	for spawn in _main.get_node("Arena/Spawns").get_children():
+		var distance_to_spawn := start.distance_to((spawn as Marker3D).global_position)
+		assert_gt(distance_to_spawn, distance_to_platform * MIN_SPAWN_TO_PLATFORM_RATIO, "%s is far enough that the player can climb before it arrives" % spawn.name)

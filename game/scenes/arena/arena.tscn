@@ -127,7 +127,7 @@ material_override = SubResource("wall_mat")
 [node name="Platforms" type="Node3D" parent="."]
 
 [node name="Platform1" type="StaticBody3D" parent="Platforms"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0.75, -9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 0.75, 9)
 
 [node name="Shape" type="CollisionShape3D" parent="Platforms/Platform1"]
 shape = SubResource("platform1_shape")
@@ -137,7 +137,7 @@ mesh = SubResource("platform1_mesh")
 material_override = SubResource("platform_mat")
 
 [node name="Platform2" type="StaticBody3D" parent="Platforms"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0, 1.5, -9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.0, 1.5, 9)
 
 [node name="Shape" type="CollisionShape3D" parent="Platforms/Platform2"]
 shape = SubResource("platform2_shape")
@@ -147,7 +147,7 @@ mesh = SubResource("platform2_mesh")
 material_override = SubResource("platform_mat")
 
 [node name="Platform3" type="StaticBody3D" parent="Platforms"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.0, 2.25, -9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.0, 2.25, 9)
 
 [node name="Shape" type="CollisionShape3D" parent="Platforms/Platform3"]
 shape = SubResource("platform3_shape")
@@ -162,16 +162,16 @@ material_override = SubResource("platform_mat")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -8)
 
 [node name="EnemySpawn2" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13, 0, -3)
 
 [node name="EnemySpawn3" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13, 0, -3)
 
 [node name="EnemySpawn4" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0, -12)
 
 [node name="EnemySpawn5" type="Marker3D" parent="Spawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -13)
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12)
