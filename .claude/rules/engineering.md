@@ -27,3 +27,4 @@ These apply to every line of code in this repo, from every session. There is no 
 ## Tests
 - New logic ships with a test that would fail if the logic were wrong. A bug fix ships with the test that reproduces the bug.
 - Run the project's build and tests before every commit. A commit that does not pass is not a commit.
+- When you add a test framework or a new check, land it together with its first passing test in the same commit, so `scripts/check.sh` is green at every commit in the series, not only at the last one.
