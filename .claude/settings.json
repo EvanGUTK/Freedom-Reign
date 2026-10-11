@@ -17,6 +17,8 @@
       "Read(**/dist/**)",
       "Read(**/build/**)",
       "Read(**/*.log)",
+      "Read(**/.godot/**)",
+      "Read(**/export/**)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
       "Bash(git push --force-with-lease:*)",
