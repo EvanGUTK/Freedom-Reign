@@ -13,7 +13,7 @@ Six Claude Code sessions work on this repo, launched by `scripts/launch-team.sh`
 - Your role card: `.claude/agents/<role>.md` — read it before your first task.
 - Rules every session follows: `.claude/rules/` (loaded automatically; `engineering.md`, `context.md`, `preferences.md`).
 - What we are building and why: `docs/DESIGN.md` (pillars, fixed decisions, current milestone).
-- Interfaces shared between roles: `docs/CONTRACTS.md`.
+- Interfaces shared between roles: `docs/CONTRACTS.md`. Accepted-but-undispatched follow-ups: `docs/BACKLOG.md`.
 - If you were started as a subagent in a temporary worktree, stay on the branch you were given.
 
 ## Chain of command
