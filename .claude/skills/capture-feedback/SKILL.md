@@ -22,7 +22,8 @@ A new skill needs frontmatter (`name`, `description` saying when to use it) and 
 
 ## 3. Commit and propagate
 - `git add` only the files you changed under `.claude/`, `docs/`, or `CLAUDE.md`. Commit message: `docs: <what was learned>`. Push `main`.
-- `SendMessage` every specialist (`engine`, `frontend`, `backend`, `audio`) and `integrator`: first line "Rules updated — run `git merge main` before your next task", then the one-line summary of what changed.
+- `SendMessage` only the sessions whose *current or next* task the change affects: first line "Rules updated — run `git merge main` before your next task", then the one-line summary. Do not interrupt a session mid-task for a change it does not need; every session merges `main` at its next task start anyway.
+- Design decisions (art direction, scope, pillars) go in `docs/DESIGN.md` — move them out of its "Open questions" list when answered.
 
 ## 4. Confirm to the user
 Reply with each item and where it now lives, in one line each. If something was too vague to record ("make it better"), say so and ask the one question that would make it recordable.

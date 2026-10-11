@@ -14,6 +14,7 @@ A 3D third-person action RPG in the Diablo tradition — fight, loot, build, rep
 | Input | Keyboard + mouse and gamepad, both from day one. |
 | Players | Single-player first. Networking is not a goal until the vertical slice is fun. |
 | Target | 60 fps on mid-range hardware. |
+| Art direction | **Dark fantasy, stylized — not realistic.** Bold silhouettes, readable shapes at distance, a restrained palette with deliberate accent colors for threats and loot (serves pillar 3). No photoreal textures or PBR-heavy assets. Audio follows the same rule: atmospheric and distinct, not cinematic-realistic. (Decided 2026-10-10.) |
 
 ## Pillars — use these to settle arguments
 1. **Every fight has a vertical dimension.** Height, ledges, and jumps matter in combat, not only in traversal.
@@ -30,6 +31,5 @@ The Godot project opens, a hello scene runs headless, `scripts/check.sh` passes 
 One arena. Move, jump, one melee attack, one enemy type, one loot drop that changes the attack, one sound effect, one pause menu. Playable start to finish in under two minutes. This is the first build the user plays.
 
 ## Open questions — the chief asks the user when a task needs the answer
-- Art direction and tone (dark fantasy, or something else?)
 - Classes vs. classless builds
 - Hand-built levels vs. procedural
