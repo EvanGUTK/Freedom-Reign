@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/attack_data.gd" id="1_attack"]
+
+[resource]
+script = ExtResource("1_attack")
+id = &"rusted_blade"
+display_name = "Rusted Blade"
+damage = 10
+cooldown_seconds = 0.6
+reach_meters = 1.8
+arc_degrees = 90.0
