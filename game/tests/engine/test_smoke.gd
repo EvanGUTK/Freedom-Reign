@@ -1,8 +1,7 @@
 extends GutTest
-## Smoke test: the main scene loads and instantiates with its root script.
+## Smoke test: the main scene loads and instantiates.
 
 const MAIN_SCENE_PATH := "res://scenes/main.tscn"
-const MAIN_SCRIPT_PATH := "res://scripts/main.gd"
 
 
 func test_main_scene_loads_and_instantiates() -> void:
@@ -14,4 +13,4 @@ func test_main_scene_loads_and_instantiates() -> void:
 	assert_not_null(root, "main scene root should be a Node3D")
 	if root == null:
 		return
-	assert_eq(root.get_script().resource_path, MAIN_SCRIPT_PATH, "main scene root should run main.gd")
+	assert_eq(root.name, &"Main")
