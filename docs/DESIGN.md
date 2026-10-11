@@ -28,7 +28,7 @@ A 3D third-person action RPG in the Diablo tradition — fight, loot, build, rep
 The Godot project opens, a hello scene runs headless, `scripts/check.sh` passes (import + tests), `.gitignore` covers Godot's generated files. Nothing else. This exists so the integrator has something to run before any feature lands.
 
 ## Milestone 2 — vertical slice (landed 2026-10-10, awaiting the user's playtest)
-One arena. Move, jump, one melee attack, one enemy type, one loot drop that changes the attack, 13 sounds and a music loop, HUD, pause menu, win/lose screens. Playable start to finish in under two minutes. Built by four roles against the Milestone 2 contract; 177 tests. Nobody but the user has seen or heard it — Milestone 3 is defined by what the user says after playing.
+One arena. Move, jump, one melee attack, one enemy type, one loot drop that changes the attack, 13 sounds and a music loop, HUD, pause menu, win/lose screens. Playable start to finish in under two minutes. Built by four roles against the Milestone 2 contract; 177 tests. User's first playtest (2026-10-10): it works end to end; looks are "super ugly" and that is fine for now — focus is the engine. Milestone 3 is engine depth.
 
 ## Open questions — the chief asks the user when a task needs the answer
 - **Ledge safety (from the first playable, 2026-10-10):** on a 1.5 m platform edge the player is out of husk contact range (3D distance 1.5 m) but can still hit down (reach 1.8 m) — a free safe spot. Options: measure contact range on the ground plane; shorten reach below 1.7 m; let husks reach upward. Decided by the user after playing.

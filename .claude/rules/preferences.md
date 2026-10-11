@@ -9,4 +9,5 @@ _None recorded yet._
 _None recorded yet._
 
 ## Process
+- Engine first. Until the user says the game *feels* right, visuals are not a priority: ugly is acceptable, and no task is spent on looks, polish, or art beyond what readability needs. (User, after the first playtest, 2026-10-10.)
 - When a request is ambiguous and getting it wrong would be expensive to redo, ask first. Otherwise act and say which reading you took.
