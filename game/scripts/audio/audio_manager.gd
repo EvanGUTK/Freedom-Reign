@@ -13,6 +13,17 @@ const NON_POSITIONAL := Vector3.INF
 ## Simultaneous one-shots per kind (positional / non-positional). When all are
 ## busy the next sound takes over the next player in round-robin order.
 const POOL_SIZE := 12
+const DUMMY_DRIVER_NAME := "Dummy"
+const NO_DEVICE_MESSAGE := "AudioManager: no audio device (Dummy driver), playback disabled"
+
+## False when there is no audio device (headless Godot uses the Dummy driver, which
+## never mixes, so a stream started on it can never be released). Everything else
+## still happens - player choice, stream, bus, position, current music, signals -
+## only the final `play()` is skipped.
+var playback_enabled := true
+
+## Id of the music that is on, or &"" when none is.
+var current_music_id: StringName = &""
 
 ## Sound id -> stream.
 var registry: Dictionary[StringName, AudioStream] = {}
@@ -26,8 +37,14 @@ var _flat_pool: Array[AudioStreamPlayer] = []
 var _spatial_pool: Array[AudioStreamPlayer3D] = []
 var _steal_cursor := 0
 
+static var _no_device_announced := false
+
 
 func _ready() -> void:
+	playback_enabled = AudioServer.get_driver_name() != DUMMY_DRIVER_NAME
+	if not playback_enabled and not _no_device_announced:
+		_no_device_announced = true
+		print(NO_DEVICE_MESSAGE)
 	# The pause menu's cues must sound while the tree is paused, and music keeps going.
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_music_player = AudioStreamPlayer.new()
@@ -41,6 +58,7 @@ func _ready() -> void:
 		add_child(spatial)
 		_spatial_pool.append(spatial)
 	_load_registry()
+	add_child(AudioEventRouter.new())
 
 
 ## `world_position` of Vector3.INF means non-positional.
@@ -64,12 +82,19 @@ func play_music(id: StringName) -> void:
 	if stream == null:
 		return
 	_music_player.stream = stream
-	_music_player.play()
+	current_music_id = id
+	if playback_enabled:
+		_music_player.play()
 	music_started.emit(id)
 
 
 func stop_music() -> void:
 	_music_player.stop()
+	current_music_id = &""
+
+
+func is_music_active() -> bool:
+	return current_music_id != &""
 
 
 func _load_registry() -> void:
@@ -126,7 +151,8 @@ func _pick(pool: Array) -> Node:
 func _play_on(player: Node, stream: AudioStream, bus: StringName) -> void:
 	player.stream = stream
 	player.bus = bus
-	player.play()
+	if playback_enabled:
+		player.play()
 
 
 func _push_error(message: String) -> void:

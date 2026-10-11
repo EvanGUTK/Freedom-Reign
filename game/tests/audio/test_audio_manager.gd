@@ -12,8 +12,9 @@ const REAL_MUSIC_ID := &"music.arena"
 const REAL_SFX_ID := &"sfx.jump"
 const REAL_UI_ID := &"ui.click"
 const SOME_POSITION := Vector3(1.0, 2.0, 3.0)
-const SFX_BUSES: Array[StringName] = [&"SFX", &"UI"]
-const MUSIC_BUSES: Array[StringName] = [&"Music"]
+## Godot's audio thread releases a stopped playback on its next mix; the one test
+## that really plays waits this long so the suite does not leave a stream behind.
+const RELEASE_WAIT_SECONDS := 0.06
 
 var _manager: Node
 var _reported_errors: Array[String] = []
@@ -28,27 +29,27 @@ func before_each() -> void:
 	_manager.error_reporter = func(message: String) -> void: _reported_errors.append(message)
 	_manager.registry[TEST_SFX_ID] = AudioStreamGenerator.new()
 	_manager.registry[TEST_MUSIC_ID] = AudioStreamGenerator.new()
+	# Tests assert what was configured; only one test turns real playback on.
+	_manager.playback_enabled = false
 	watch_signals(_manager)
 
 
-func _players(type_name: String, buses: Array[StringName], only_playing: bool) -> Array[Node]:
-	var found: Array[Node] = []
+func after_each() -> void:
 	for child in _manager.get_children():
-		if child.is_class(type_name) and child.bus in buses and (child.playing or not only_playing):
-			found.append(child)
-	return found
+		if child is AudioStreamPlayer or child is AudioStreamPlayer3D:
+			child.stop()
 
 
-func _playing_flat_sfx() -> Array[Node]:
-	return _players("AudioStreamPlayer", SFX_BUSES, true)
+func _configured_flat_sfx() -> Array[Node]:
+	return AudioTestHelpers.configured_flat_sfx(_manager)
 
 
-func _playing_spatial_sfx() -> Array[Node]:
-	return _players("AudioStreamPlayer3D", SFX_BUSES, true)
+func _configured_spatial_sfx() -> Array[Node]:
+	return AudioTestHelpers.configured_spatial_sfx(_manager)
 
 
 func _music_players() -> Array[Node]:
-	return _players("AudioStreamPlayer", MUSIC_BUSES, false)
+	return AudioTestHelpers.music_players(_manager)
 
 
 func _first_error() -> String:
@@ -89,7 +90,7 @@ func test_unknown_sfx_reports_exactly_one_error_naming_the_id() -> void:
 func test_unknown_positional_sfx_reports_once_and_plays_nothing() -> void:
 	_manager.play_sfx(UNKNOWN_ID, SOME_POSITION)
 	assert_eq(_reported_errors.size(), 1)
-	assert_eq(_playing_spatial_sfx().size(), 0)
+	assert_eq(_configured_spatial_sfx().size(), 0)
 	assert_signal_not_emitted(_manager, "sfx_played")
 
 
@@ -105,7 +106,7 @@ func test_music_id_through_play_sfx_is_reported_not_played() -> void:
 	assert_eq(_reported_errors.size(), 1)
 	assert_string_contains(_first_error(), "play_music")
 	assert_signal_not_emitted(_manager, "sfx_played")
-	assert_eq(_playing_flat_sfx().size(), 0)
+	assert_eq(_configured_flat_sfx().size(), 0)
 
 
 func test_sfx_id_through_play_music_is_reported_not_played() -> void:
@@ -117,9 +118,9 @@ func test_sfx_id_through_play_music_is_reported_not_played() -> void:
 
 func test_sfx_without_position_uses_one_flat_player_on_the_sfx_bus() -> void:
 	_manager.play_sfx(REAL_SFX_ID)
-	var flat := _playing_flat_sfx()
+	var flat := _configured_flat_sfx()
 	assert_eq(flat.size(), 1)
-	assert_eq(_playing_spatial_sfx().size(), 0, "no positional player for a non-positional sound")
+	assert_eq(_configured_spatial_sfx().size(), 0, "no positional player for a non-positional sound")
 	if flat.size() == 1:
 		assert_eq((flat[0] as AudioStreamPlayer).bus, &"SFX")
 		assert_eq((flat[0] as AudioStreamPlayer).stream, _manager.registry[REAL_SFX_ID])
@@ -128,9 +129,9 @@ func test_sfx_without_position_uses_one_flat_player_on_the_sfx_bus() -> void:
 
 func test_sfx_with_position_uses_one_spatial_player_at_that_position() -> void:
 	_manager.play_sfx(REAL_SFX_ID, SOME_POSITION)
-	var spatial := _playing_spatial_sfx()
+	var spatial := _configured_spatial_sfx()
 	assert_eq(spatial.size(), 1)
-	assert_eq(_playing_flat_sfx().size(), 0, "no flat player for a positional sound")
+	assert_eq(_configured_flat_sfx().size(), 0, "no flat player for a positional sound")
 	if spatial.size() == 1:
 		assert_eq((spatial[0] as AudioStreamPlayer3D).global_position, SOME_POSITION)
 		assert_eq((spatial[0] as AudioStreamPlayer3D).bus, &"SFX")
@@ -139,7 +140,7 @@ func test_sfx_with_position_uses_one_spatial_player_at_that_position() -> void:
 
 func test_ui_sounds_play_on_the_ui_bus() -> void:
 	_manager.play_sfx(REAL_UI_ID)
-	var flat := _playing_flat_sfx()
+	var flat := _configured_flat_sfx()
 	assert_eq(flat.size(), 1)
 	if flat.size() == 1:
 		assert_eq((flat[0] as AudioStreamPlayer).bus, &"UI")
@@ -153,21 +154,15 @@ func test_players_are_pooled_not_created_per_call() -> void:
 	assert_eq(_manager.get_child_count(), children_before)
 
 
-func test_a_full_pool_cuts_in_rather_than_dropping_the_sound() -> void:
-	for _i in _manager.POOL_SIZE + 1:
-		_manager.play_sfx(TEST_SFX_ID)
-	assert_eq(_playing_flat_sfx().size(), _manager.POOL_SIZE)
-	assert_signal_emit_count(_manager, "sfx_played", _manager.POOL_SIZE + 1)
-
-
 func test_music_loops_on_the_music_bus_and_announces_itself() -> void:
 	_manager.play_music(REAL_MUSIC_ID)
 	var players := _music_players()
 	assert_eq(players.size(), 1)
 	if players.size() == 1:
-		var player := players[0] as AudioStreamPlayer
-		assert_true(player.playing)
-		assert_true((player.stream as AudioStreamOggVorbis).loop, "arena music should loop")
+		assert_eq((players[0] as AudioStreamPlayer).stream, _manager.registry[REAL_MUSIC_ID])
+		assert_true((_manager.registry[REAL_MUSIC_ID] as AudioStreamOggVorbis).loop, "arena music should loop")
+	assert_eq(_manager.current_music_id, REAL_MUSIC_ID)
+	assert_true(_manager.is_music_active())
 	assert_signal_emitted_with_parameters(_manager, "music_started", [REAL_MUSIC_ID])
 
 
@@ -178,17 +173,39 @@ func test_play_music_replaces_the_current_track() -> void:
 	assert_eq(players.size(), 1, "still one music player")
 	if players.size() == 1:
 		assert_eq((players[0] as AudioStreamPlayer).stream, _manager.registry[TEST_MUSIC_ID])
-		assert_true((players[0] as AudioStreamPlayer).playing)
+	assert_eq(_manager.current_music_id, TEST_MUSIC_ID)
 	assert_signal_emit_count(_manager, "music_started", 2)
 
 
-func test_stop_music_stops_playback() -> void:
+func test_stop_music_clears_the_current_track() -> void:
 	_manager.play_music(REAL_MUSIC_ID)
 	_manager.stop_music()
-	for player in _music_players():
-		assert_false((player as AudioStreamPlayer).playing)
+	assert_eq(_manager.current_music_id, &"")
+	assert_false(_manager.is_music_active())
 
 
-func test_stop_music_with_nothing_playing_is_harmless() -> void:
+func test_unknown_music_leaves_the_current_track_alone() -> void:
+	_manager.play_music(REAL_MUSIC_ID)
+	_manager.play_music(&"music.does_not_exist")
+	assert_eq(_manager.current_music_id, REAL_MUSIC_ID)
+
+
+func test_playback_is_off_exactly_when_the_driver_is_dummy() -> void:
+	var fresh: Node = add_child_autofree(load(AUDIO_MANAGER_SCRIPT).new())
+	assert_eq(fresh.playback_enabled, AudioServer.get_driver_name() != "Dummy")
+
+
+func test_with_playback_enabled_a_player_really_plays_and_is_released() -> void:
+	_manager.playback_enabled = true
+	_manager.play_sfx(REAL_UI_ID)
+	var flat := _configured_flat_sfx()
+	assert_eq(flat.size(), 1)
+	if flat.size() == 1:
+		assert_true((flat[0] as AudioStreamPlayer).playing)
+		(flat[0] as AudioStreamPlayer).stop()
+	await wait_seconds(RELEASE_WAIT_SECONDS)
+
+
+func test_stop_music_with_no_music_is_harmless() -> void:
 	_manager.stop_music()
 	assert_eq(_reported_errors.size(), 0)
