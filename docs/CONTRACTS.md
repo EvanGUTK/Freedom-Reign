@@ -101,3 +101,11 @@ Player: health 100, walk 6 m/s, jump height 2.2 m, gravity 24 m/s², third-perso
 1. **engine foundation**: project settings, `Events`, data types and instances, minimal `AudioManager`, `ui_root.tscn` instanced in `main.tscn`, spawn markers. → integrator → every role runs `git merge main`.
 2. **in parallel**: engine gameplay · frontend UI · audio sounds · backend tooling (backend may start now; it depends on nothing above).
 3. The chief hands the build to the user.
+
+## Team bus — cross-tool messaging (spec, 2026-10-11; not built yet)
+Purpose: roles running in different harnesses (Claude Code, Codex CLI, OpenCode, Antigravity) exchange task cards and reports without the user relaying.
+- Store: `~/Projects/BridgeMind/.teambus/` — outside every worktree, never in git. `inbox/<role>/<ISO-timestamp>-<from>-<id>.json` with `id`, `from`, `to`, `subject`, `body`, `created`, `read`. Plain files, so any tool can read them even without the CLI.
+- CLI (backend owns, `scripts/team.sh`): `send <role> "<subject>" [body]` (body also accepted on stdin), `inbox [--all]` (unread for your role; role = your folder's suffix, overridable with `TEAM_ROLE`), `ack <id>`, `who` (roles and unread counts), `log` (everything, newest last). Exit codes and a stub-based self-test under `scripts/tests/`, like the other scripts. `send` to an unknown role is an error, not a silent drop.
+- Claude hook (backend, after the CLI): a `UserPromptSubmit` hook in `.claude/settings.json` runs `scripts/team.sh inbox` and injects unread messages as context, so Claude roles see bus traffic without being told. Other harnesses have no hook: they check at task start and end.
+- MCP server (api-mcp owns, `tools/teambus/`): exposes `send`, `inbox`, `ack`, `who` as MCP tools over stdio on the same files, so every harness can use the bus natively; plus the config entries for `.mcp.json` (Claude), `opencode.json`, Codex and Antigravity. Stdlib-only if possible; otherwise one pinned dependency with the reason in the commit.
+- Rules: one message per task card or report; the subject is the first line; no file contents in messages — point to branch and commit. The bus is not a substitute for git.

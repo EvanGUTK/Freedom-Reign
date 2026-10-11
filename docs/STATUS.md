@@ -1,8 +1,9 @@
-# Status — paused 2026-10-10, late evening
+# Status — updated 2026-10-11 (morning)
 
 Read this first when resuming. The chief keeps it current at every pause.
 
 ## Where things stand
+- 2026-10-11: roster expanded to ten roles (added api-mcp, artwork, ui-ux, validator, visuals — cards in `.claude/agents/`, worktrees and branches created, nothing dispatched). Team rules moved to `AGENTS.md` so Codex, OpenCode, and Antigravity sessions follow the same workflow; `CLAUDE.md` imports it. Cross-tool "team bus" is specified in `docs/CONTRACTS.md`, not built. Starting tool-per-role assignment is in `AGENTS.md`.
 - `main` is green: Milestone 1 (skeleton) and Milestone 2 (vertical slice) are landed. 177 GUT tests, `scripts/check.sh` PASS.
 - The slice is playable: `scripts/play.sh` — WASD, mouse look, Space jump, left-click swing, Esc pause. Five husks, three platforms, first kill drops the Ember Cleaver, HUD, win/lose screens, 13 sounds and a music loop.
 - User's verdict after the first playtest: works end to end; "super ugly" and that is fine — **engine first** (recorded in `.claude/rules/preferences.md`).
@@ -18,6 +19,8 @@ Read this first when resuming. The chief keeps it current at every pause.
    and set `"model": "fable"` if Fable 5.1 should be the default again (a `/model opus` in one window changed it).
 
 ## Decisions waiting on the user
+- **Team bus build** — say go: backend builds `scripts/team.sh` + the Claude hook; api-mcp builds the MCP server + harness configs. Both can run in Claude windows now (the other harnesses are not set up yet).
+- **Tool-per-role assignment** in `AGENTS.md` — confirm or change.
 - **Milestone 3 scope** — proposal below; say "go" or edit it.
 - **Ledge rule** — on a 1.5 m platform edge the player is untouchable while still hitting down. Chief's recommendation: husks can hit up within a 2 m vertical gap, and attacks from above do 1.5× damage — height becomes a reward, not immunity. Needs a yes.
 - **GitHub billing** (only if CI is ever wanted): Settings → Billing and plans → Payment information (clear the failed charge) and Budgets (Actions not capped at $0). Then `gh workflow enable check.yml`.
