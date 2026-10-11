@@ -9,6 +9,8 @@ readonly SCRIPT_DIR
 readonly CHECK_SH="$SCRIPT_DIR/../check.sh"
 readonly EXIT_PASS=0
 readonly EXIT_FAIL=1
+readonly ANSI_GREEN=$'\e[32m'
+readonly ANSI_RESET=$'\e[0m'
 readonly GUT_CLEAN_OUTPUT='Passing Tests         1'
 
 WORKDIR="$(mktemp -d)"
@@ -83,6 +85,7 @@ run_case "e: GUT nothing was run" "$EXIT_FAIL" "FAIL: tests" tests 0 "[GUT ERROR
 run_case "f: GUT zero passing tests" "$EXIT_FAIL" "FAIL: tests" tests 0 "Passing Tests         0"
 run_case "g: tests exit nonzero" "$EXIT_FAIL" "FAIL: tests" tests 1 "$GUT_CLEAN_OUTPUT"
 run_case "h: Godot unrunnable" "$EXIT_FAIL" "FAIL: toolchain" "" 0 "" "$WORKDIR/no-such-godot"
+run_case "i: ANSI-wrapped passing tests" "$EXIT_PASS" "PASS" tests 0 "${ANSI_GREEN}Passing Tests         1${ANSI_RESET}"
 
 echo "$((total - failures))/$total cases passed"
 if ((failures > 0)); then
