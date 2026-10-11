@@ -31,10 +31,8 @@ func test_main_has_no_script() -> void:
 	assert_null(_main.get_script(), "Main is a bare Node3D until gameplay needs it")
 
 
-func test_ui_root_is_a_bare_canvas_layer() -> void:
-	var ui := _main.get_node("UI")
-	assert_null(ui.get_script(), "ui_root has no script")
-	assert_eq(ui.get_child_count(), 0, "ui_root has no content; frontend fills it")
+func test_main_instances_ui_root_as_ui() -> void:
+	assert_eq(_main.get_node("UI").scene_file_path, "res://scenes/ui/ui_root.tscn")
 
 
 func test_floor_is_30_by_30_with_top_at_ground_level() -> void:

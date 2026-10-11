@@ -1,0 +1,132 @@
+[gd_resource type="Theme" load_steps=11 format=3]
+
+[sub_resource type="StyleBoxFlat" id="panel"]
+content_margin_left = 32.0
+content_margin_top = 28.0
+content_margin_right = 32.0
+content_margin_bottom = 28.0
+bg_color = Color(0.09, 0.08, 0.11, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.25, 0.33, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="scrim"]
+bg_color = Color(0.03, 0.02, 0.05, 0.7)
+
+[sub_resource type="StyleBoxFlat" id="button_normal"]
+content_margin_left = 40.0
+content_margin_top = 14.0
+content_margin_right = 40.0
+content_margin_bottom = 14.0
+bg_color = Color(0.14, 0.12, 0.17, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.25, 0.33, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="button_hover"]
+content_margin_left = 40.0
+content_margin_top = 14.0
+content_margin_right = 40.0
+content_margin_bottom = 14.0
+bg_color = Color(0.2, 0.17, 0.23, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.4, 0.5, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="button_pressed"]
+content_margin_left = 40.0
+content_margin_top = 14.0
+content_margin_right = 40.0
+content_margin_bottom = 14.0
+bg_color = Color(0.07, 0.06, 0.09, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.91, 0.64, 0.23, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="button_focus"]
+draw_center = false
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.91, 0.64, 0.23, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="bar_background"]
+bg_color = Color(0.04, 0.03, 0.06, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.25, 0.33, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="bar_fill"]
+bg_color = Color(0.91, 0.64, 0.23, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxEmpty" id="empty"]
+
+[resource]
+default_font_size = 22
+Button/colors/font_color = Color(0.85, 0.82, 0.75, 1)
+Button/colors/font_focus_color = Color(1, 0.92, 0.75, 1)
+Button/colors/font_hover_color = Color(1, 0.92, 0.75, 1)
+Button/colors/font_pressed_color = Color(0.91, 0.64, 0.23, 1)
+Button/font_sizes/font_size = 28
+Button/styles/focus = SubResource("button_focus")
+Button/styles/hover = SubResource("button_hover")
+Button/styles/normal = SubResource("button_normal")
+Button/styles/pressed = SubResource("button_pressed")
+Label/colors/font_color = Color(0.85, 0.82, 0.75, 1)
+Label/colors/font_outline_color = Color(0.03, 0.02, 0.05, 1)
+Label/constants/outline_size = 6
+Label/styles/normal = SubResource("empty")
+Panel/styles/panel = SubResource("panel")
+ProgressBar/colors/font_color = Color(0.85, 0.82, 0.75, 1)
+ProgressBar/styles/background = SubResource("bar_background")
+ProgressBar/styles/fill = SubResource("bar_fill")
+HealthBar/base_type = &"ProgressBar"
+EnemyCountLabel/base_type = &"Label"
+EnemyCountLabel/colors/font_color = Color(0.82, 0.27, 0.24, 1)
+EnemyCountLabel/font_sizes/font_size = 32
+AttackLabel/base_type = &"Label"
+AttackLabel/colors/font_color = Color(0.91, 0.64, 0.23, 1)
+AttackLabel/font_sizes/font_size = 28
+TitleLabel/base_type = &"Label"
+TitleLabel/font_sizes/font_size = 52
+Scrim/base_type = &"Panel"
+Scrim/styles/panel = SubResource("scrim")
