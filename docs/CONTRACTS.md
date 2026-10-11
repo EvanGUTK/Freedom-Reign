@@ -51,6 +51,8 @@ A merge conflict between two roles is a process failure, not a git problem. If y
 ### Autoloads (engine foundation, registered in this order)
 1. `Events` → `res://scripts/events.gd` — the signal bus. Gameplay emits; UI and audio connect. Nobody calls into a UI or audio node from gameplay, and UI/audio never call gameplay nodes. This is the dependency boundary from `engineering.md`.
 2. `AudioManager` → `res://scripts/audio/audio_manager.gd`.
+- An autoload is registered in the same commit that creates its script, never earlier — every commit must boot.
+- `AudioManager.registry: Dictionary[StringName, AudioStream]` is the id→stream map audio fills. `AudioManager.error_reporter: Callable` defaults to `push_error`; tests inject a recorder so an expected unknown-id report never prints a real `ERROR:` line (which would fail `check.sh`). Keep both when you replace the file.
 
 ### `Events` signals — exact names and arguments; adding one is a contract change via the chief
 - `player_health_changed(current: int, maximum: int)`
