@@ -75,8 +75,9 @@ A merge conflict between two roles is a process failure, not a git problem. If y
 Player: health 100, walk 6 m/s, jump height 2.2 m, gravity 24 m/s², third-person camera behind and above. Enemy `husk`: health 30, speed 3.5 m/s, contact damage 10 once per 1.0 s while within 1.5 m, walks straight at the player, no pathfinding. The first husk killed drops `ember_cleaver`; pickup is by touch. Arena: 30×30 m floor, three platforms at 1.5 / 3 / 4.5 m reachable by jumping, five husks at fixed spawn markers, enemies in group `enemies`. Win = `arena_cleared`; lose = `player_died`.
 
 ### UI (frontend) — everything under `scenes/ui/ui_root.tscn`
-- HUD: health bar from `player_health_changed`; current attack name from `attack_changed`; enemies remaining = size of group `enemies` at ready, minus one per `enemy_died`.
+- HUD: health bar from `player_health_changed`; current attack name from `attack_changed`; enemies remaining = size of group `enemies`, read **one frame after** `_ready` (`await get_tree().process_frame`) because `UI` is readied before `Actors` spawns the husks — at `_ready` the group is empty; then minus one per `enemy_died`. `UI` is readied before the player, so connecting in `_ready` does receive the initial `player_health_changed` and `attack_changed`.
 - Pause menu: on `pause` action toggle `get_tree().paused`, emit `game_paused`, show Resume / Quit; `process_mode = PROCESS_MODE_ALWAYS`.
+- The pause menu and end screen never touch `Input.mouse_mode`: gameplay's `CameraRig` releases the mouse on pause, death and arena clear and recaptures on unpause (via `NOTIFICATION_PAUSED` / `UNPAUSED`). UI only toggles `paused` and emits the signal.
 - End screen: `arena_cleared` → "Arena cleared" + Restart; `player_died` → "You died" + Restart. Restart unpauses and calls `get_tree().reload_current_scene()`.
 - One `Theme` resource at `scenes/ui/theme.tres`; no per-control style overrides. Keyboard, mouse, and gamepad all navigate menus.
 
