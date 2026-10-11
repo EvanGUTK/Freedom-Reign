@@ -27,6 +27,7 @@ Questions flow up, never sideways: specialist → chief → user. A specialist t
 ## Git rules for every session
 - Edit only inside the folder you were started in. Never `cd` into another worktree.
 - Only the integrator commits to or pushes `main`. Exception: the chief may commit documentation-only changes (`CLAUDE.md`, `.claude/`, `docs/`) to `main` and must push them immediately.
+- The chief and the integrator share the main checkout. While a merge request is open (sent to the integrator and not yet reported back), the chief does not commit on `main`; it queues its docs changes and lands them in one commit after the integrator reports. Otherwise the chief's commit lands in the integrator's half-finished merge.
 - Start every task with `git merge main`.
 - Commits are atomic: one logical change per commit, each builds and passes tests on its own. Message format: `type: what and why` with type one of `feat`, `fix`, `refactor`, `test`, `docs`, `chore`. Never `--no-verify`, never force-push, never rewrite pushed history.
 - Never commit secrets, credentials, generated output, or any file over 5 MB without the user's explicit say-so.
