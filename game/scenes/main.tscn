@@ -1,10 +1,17 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/arena/arena.tscn" id="1_arena"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ui_root.tscn" id="2_ui"]
+[ext_resource type="Script" path="res://scripts/arena/actor_spawner.gd" id="3_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="4_player"]
 
 [node name="Main" type="Node3D"]
 
 [node name="Arena" parent="." instance=ExtResource("1_arena")]
 
 [node name="UI" parent="." instance=ExtResource("2_ui")]
+
+[node name="Actors" type="Node" parent="." node_paths=PackedStringArray("player_spawn")]
+script = ExtResource("3_spawner")
+player_scene = ExtResource("4_player")
+player_spawn = NodePath("../Arena/PlayerSpawn")

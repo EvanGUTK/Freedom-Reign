@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/player/camera_rig.gd" id="2_rig"]
+
+[sub_resource type="CapsuleShape3D" id="body_shape"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleMesh" id="body_mesh"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="BoxMesh" id="visor_mesh"]
+size = Vector3(0.5, 0.15, 0.3)
+
+[sub_resource type="SphereShape3D" id="arm_shape"]
+radius = 0.25
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_player")
+
+[node name="Shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("body_shape")
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("body_mesh")
+
+[node name="Visor" type="MeshInstance3D" parent="Model"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -0.35)
+mesh = SubResource("visor_mesh")
+
+[node name="CameraRig" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+script = ExtResource("2_rig")
+
+[node name="Arm" type="SpringArm3D" parent="CameraRig"]
+shape = SubResource("arm_shape")
+spring_length = 5.0
+collision_mask = 1
+margin = 0.2
+
+[node name="Camera" type="Camera3D" parent="CameraRig/Arm"]
+current = true
