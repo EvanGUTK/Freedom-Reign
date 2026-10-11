@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# Launch the six-session Freedom-Reign team, each in its own window.
+# Freedom-Reign team sessions. This script never opens windows: you open CLI
+# windows inside BridgeMind yourself and paste the command it prints.
 #
-#   scripts/launch-team.sh                     one ghostty window per role (your tiling WM arranges them)
-#   scripts/launch-team.sh tmux                one tmux session, one tab per role (Ctrl-b 0..5 to switch)
-#   scripts/launch-team.sh list                print what would be launched
-#   scripts/launch-team.sh ghostty chief engine   only those roles (works with any mode)
+#   scripts/launch-team.sh cmd engine        print the command to paste into a window for that role
+#   scripts/launch-team.sh cmd               print the command for every role
+#   scripts/launch-team.sh list              show roles, folders, models
+#   scripts/launch-team.sh tmux [role ...]   inside ONE window: a tmux tab per role (Ctrl-b 0..5)
 #
 # Every session gets --name <role> so the chief can address it with SendMessage.
 # The chief uses your saved default model; the others get the model listed below.
@@ -13,7 +14,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # main checkout (chief + integrator)
 PARENT="$(dirname "$ROOT")"
 NAME="$(basename "$ROOT")"
-MODE="${1:-ghostty}"
+MODE="${1:-cmd}"
 ONLY=("${@:2}")   # optional role filter; empty = all
 
 wanted() {  # wanted <role> → true if no filter or role is in the filter
@@ -40,7 +41,14 @@ for entry in "${ROLES[@]}"; do
   fi
 done
 
-launch_cmd() {  # prints a shell-escaped `claude ...` command line
+paste_cmd() {  # human-readable command line for one role (prompts contain no single quotes)
+  local role="$1" model="$2" prompt="$3"
+  local cmd="claude --name $role"
+  [[ -n "$model" ]] && cmd+=" --model $model"
+  printf "%s '%s'" "$cmd" "$prompt"
+}
+
+tmux_cmd() {  # fully shell-escaped command line for tmux
   local role="$1" model="$2" prompt="$3"
   local cmd=(claude --name "$role")
   [[ -n "$model" ]] && cmd+=(--model "$model")
@@ -49,6 +57,13 @@ launch_cmd() {  # prints a shell-escaped `claude ...` command line
 }
 
 case "$MODE" in
+  cmd)
+    for entry in "${ROLES[@]}"; do
+      IFS='|' read -r role dir model prompt <<<"$entry"
+      wanted "$role" || continue
+      printf '# %s\ncd %s && %s\n\n' "$role" "$dir" "$(paste_cmd "$role" "$model" "$prompt")"
+    done
+    ;;
   list)
     for entry in "${ROLES[@]}"; do
       IFS='|' read -r role dir model prompt <<<"$entry"
@@ -66,7 +81,7 @@ case "$MODE" in
     for entry in "${ROLES[@]}"; do
       IFS='|' read -r role dir model prompt <<<"$entry"
       wanted "$role" || continue
-      cmd="$(launch_cmd "$role" "$model" "$prompt")"
+      cmd="$(tmux_cmd "$role" "$model" "$prompt")"
       if (( first )); then
         tmux new-session -d -s "$SESSION" -n "$role" -c "$dir" "$cmd"
         first=0
@@ -77,22 +92,8 @@ case "$MODE" in
     tmux select-window -t "$SESSION:chief" 2>/dev/null || true
     exec tmux attach -t "$SESSION"
     ;;
-  ghostty)
-    command -v ghostty >/dev/null || { echo "ghostty not found; try: $0 tmux" >&2; exit 1; }
-    launched=()
-    for entry in "${ROLES[@]}"; do
-      IFS='|' read -r role dir model prompt <<<"$entry"
-      wanted "$role" || continue
-      launched+=("$role")
-      args=(--name "$role")
-      [[ -n "$model" ]] && args+=(--model "$model")
-      setsid -f ghostty --working-directory="$dir" --title="FR: $role" -e claude "${args[@]}" "$prompt" >/dev/null 2>&1
-      sleep 0.4   # let the window manager place each window before the next appears
-    done
-    echo "launched ${#launched[@]} window(s): ${launched[*]}"
-    ;;
   *)
-    echo "usage: $0 [ghostty|tmux|list] [role ...]" >&2
+    echo "usage: $0 [cmd|list|tmux] [role ...]" >&2
     exit 2
     ;;
 esac
