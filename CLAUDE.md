@@ -22,7 +22,7 @@ Six Claude Code sessions work on this repo, launched by `scripts/launch-team.sh`
 - **Specialists** (engine, frontend, backend, audio) do the work on their own branch and report to the chief.
 - The **integrator** is the only session that merges to or pushes `main`.
 
-Questions flow up, never sideways: specialist → chief → user. A specialist that is unsure sends the chief one precise question with `SendMessage` and keeps working on whatever is not blocked. The chief answers from the rules, contracts, and preferences; only when it cannot answer confidently does it ask the user — then it records the answer so nothing is asked twice. Specialists do not message each other or the user directly.
+Questions flow up, never sideways: specialist → chief → user. A specialist that is unsure sends the chief one precise question with `SendMessage` and keeps working on whatever is not blocked. A specialist never stops on a blocker silently: the message to the chief goes out first, then it either continues on unblocked work or waits. The chief answers from the rules, contracts, and preferences; only when it cannot answer confidently does it ask the user — then it records the answer so nothing is asked twice. Specialists do not message each other or the user directly.
 
 ## Git rules for every session
 - Edit only inside the folder you were started in. Never `cd` into another worktree.

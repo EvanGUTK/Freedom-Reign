@@ -33,6 +33,7 @@ One arena, playable start to finish in under two minutes: move, jump, one melee 
 
 ### Ownership — who may edit what
 A merge conflict between two roles is a process failure, not a git problem. If you need a change in a file you do not own, ask the chief.
+Tests follow ownership: when a file passes from one role to another (engine's foundation hands `ui_root.tscn` to frontend and `audio_manager.gd` to audio), the assertions about that file's contents pass with it — move or rewrite them in the same commit that changes the file, and say so in the message. Assertions about how `main.tscn` wires things stay with engine.
 
 | Path | Owner | Notes |
 |---|---|---|
