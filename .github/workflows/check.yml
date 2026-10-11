@@ -19,5 +19,7 @@ jobs:
           use-dotnet: false
       - name: Self-test the gate
         run: scripts/tests/check_test.sh
+      - name: Self-test the build and play scripts
+        run: scripts/tests/build_test.sh
       - name: Run the gate
         run: scripts/check.sh

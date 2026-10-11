@@ -16,4 +16,4 @@ Game project built by a team of Claude Code agents. See `CLAUDE.md` for how the 
 
 `scripts/tests/build_test.sh` does the same for `build.sh` and `play.sh` (stub Godot, temp templates folder and temp project, so nothing is exported or downloaded); run it after editing either script.
 
-CI (`.github/workflows/check.yml`) runs `scripts/tests/check_test.sh` and then `scripts/check.sh` with Godot 4.7.2 headless on every push and pull request.
+CI (`.github/workflows/check.yml`) runs `scripts/tests/check_test.sh`, `scripts/tests/build_test.sh` and then `scripts/check.sh` with Godot 4.7.2 headless on every push and pull request.
