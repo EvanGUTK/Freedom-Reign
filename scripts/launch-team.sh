@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Launch the six-session Freedom-Reign team, each in its own window.
 #
-#   scripts/launch-team.sh          one ghostty window per role (your tiling WM arranges them)
-#   scripts/launch-team.sh tmux     one tmux session, one tab per role (Ctrl-b 0..5 to switch)
-#   scripts/launch-team.sh list     print what would be launched
+#   scripts/launch-team.sh                     one ghostty window per role (your tiling WM arranges them)
+#   scripts/launch-team.sh tmux                one tmux session, one tab per role (Ctrl-b 0..5 to switch)
+#   scripts/launch-team.sh list                print what would be launched
+#   scripts/launch-team.sh ghostty chief engine   only those roles (works with any mode)
 #
 # Every session gets --name <role> so the chief can address it with SendMessage.
 # The chief uses your saved default model; the others get the model listed below.
@@ -13,6 +14,13 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"   # main checkout (chief
 PARENT="$(dirname "$ROOT")"
 NAME="$(basename "$ROOT")"
 MODE="${1:-ghostty}"
+ONLY=("${@:2}")   # optional role filter; empty = all
+
+wanted() {  # wanted <role> → true if no filter or role is in the filter
+  (( ${#ONLY[@]} == 0 )) && return 0
+  local r; for r in "${ONLY[@]}"; do [[ "$r" == "$1" ]] && return 0; done
+  return 1
+}
 
 # role | folder | model ("" = your default) | opening instruction
 ROLES=(
@@ -44,6 +52,7 @@ case "$MODE" in
   list)
     for entry in "${ROLES[@]}"; do
       IFS='|' read -r role dir model prompt <<<"$entry"
+      wanted "$role" || continue
       printf '%-11s %-45s %s\n' "$role" "$dir" "${model:-default}"
     done
     ;;
@@ -56,6 +65,7 @@ case "$MODE" in
     first=1
     for entry in "${ROLES[@]}"; do
       IFS='|' read -r role dir model prompt <<<"$entry"
+      wanted "$role" || continue
       cmd="$(launch_cmd "$role" "$model" "$prompt")"
       if (( first )); then
         tmux new-session -d -s "$SESSION" -n "$role" -c "$dir" "$cmd"
@@ -64,22 +74,25 @@ case "$MODE" in
         tmux new-window -t "$SESSION" -n "$role" -c "$dir" "$cmd"
       fi
     done
-    tmux select-window -t "$SESSION:chief"
+    tmux select-window -t "$SESSION:chief" 2>/dev/null || true
     exec tmux attach -t "$SESSION"
     ;;
   ghostty)
     command -v ghostty >/dev/null || { echo "ghostty not found; try: $0 tmux" >&2; exit 1; }
+    launched=()
     for entry in "${ROLES[@]}"; do
       IFS='|' read -r role dir model prompt <<<"$entry"
+      wanted "$role" || continue
+      launched+=("$role")
       args=(--name "$role")
       [[ -n "$model" ]] && args+=(--model "$model")
       setsid -f ghostty --working-directory="$dir" --title="FR: $role" -e claude "${args[@]}" "$prompt" >/dev/null 2>&1
       sleep 0.4   # let the window manager place each window before the next appears
     done
-    echo "launched 6 windows: chief, integrator, engine, frontend, backend, audio"
+    echo "launched ${#launched[@]} window(s): ${launched[*]}"
     ;;
   *)
-    echo "usage: $0 [ghostty|tmux|list]" >&2
+    echo "usage: $0 [ghostty|tmux|list] [role ...]" >&2
     exit 2
     ;;
 esac
